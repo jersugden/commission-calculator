@@ -1,0 +1,45 @@
+import streamlit as st
+import matplotlib.pyplot as plt
+
+# Commission Calculation Function
+def calculate_commission(revenue, cross_sell, quota=100000):
+    if revenue <= 0.7 * quota:
+        revenue_commission = 0.08 * revenue
+    elif 0.7 * quota < revenue <= quota:
+        revenue_commission = 0.10 * revenue
+    else:
+        revenue_commission = 0.12 * revenue
+    
+    cross_sell_commission = 0.08 * cross_sell
+    return revenue_commission, cross_sell_commission
+
+# App Title
+st.title("Dynamic Commission Calculator")
+
+# User Inputs
+st.sidebar.header("Adjust Your Inputs")
+base_salary = st.sidebar.slider("Base Salary ($)", 100000, 130000, 120000, step=1000)
+revenue = st.sidebar.number_input("Monthly Revenue Sourced ($)", min_value=0, step=1000)
+cross_sell = st.sidebar.number_input("Cross-Sell Revenue ($)", min_value=0, step=1000)
+
+# Calculate Commission
+revenue_commission, cross_sell_commission = calculate_commission(revenue, cross_sell)
+total_commission = revenue_commission + cross_sell_commission
+total_compensation = base_salary + total_commission
+
+# Results Section
+st.header("Results")
+st.write(f"**Base Salary:** ${base_salary}")
+st.write(f"**Revenue Commission:** ${revenue_commission:.2f}")
+st.write(f"**Cross-Sell Commission:** ${cross_sell_commission:.2f}")
+st.write(f"**Total Commission:** ${total_commission:.2f}")
+st.write(f"**Total Compensation:** ${total_compensation:.2f}")
+
+# Visualization
+st.subheader("Compensation Breakdown")
+fig, ax = plt.subplots()
+labels = ['Base Salary', 'Revenue Commission', 'Cross-Sell Commission']
+values = [base_salary, revenue_commission, cross_sell_commission]
+ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
+ax.set_title("Total Compensation Distribution")
+st.pyplot(fig)
